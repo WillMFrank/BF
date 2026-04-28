@@ -32,33 +32,20 @@ button:hover{background:#e5c144}
 <script>
 const { useState, useEffect } = React;
 
-const storage = {
-  get: (key) => new Promise(res => {
-    if (typeof google !== 'undefined' && google.script && google.script.run) {
-      google.script.run.withSuccessHandler(v => res(v)).withFailureHandler(() => res(null)).loadData(key);
-    } else {
-      try { res(localStorage.getItem(key)); } catch { res(null); }
-    }
-  }),
-  set: (key, val) => new Promise(res => {
-    if (typeof google !== 'undefined' && google.script && google.script.run) {
-      google.script.run.withSuccessHandler(() => res()).withFailureHandler(() => res()).saveData(key, val);
-    } else {
-      try { localStorage.setItem(key, val); } catch {}
-      res();
-    }
-  })
+const EMBEDDED_DATA = {
+  catalog: [{"id":1,"title":"Lick Dat","artist":"Yellow Claw & Mightyfools","isrc":"NLZ541400390","released":"2014-06-02","type":"License","expiry":"2024-06-02"},{"id":2,"title":"Money Grabber Ft. Spacekees","artist":"Yung Felix & Spacekees","isrc":"NLZ541400592","released":"2014-09-08","type":"License","expiry":"2024-09-08"},{"id":3,"title":"Global March","artist":"Wiwek Mahabali","isrc":"NLZ541400768","released":"2014-09-22","type":"License","expiry":"2024-09-22"},{"id":7,"title":"Into The Madness","artist":"Coone","isrc":"NLZ541400763","released":"2014-10-06","type":"License","expiry":"2024-10-06"},{"id":8,"title":"Boss It Up Ft. The Kemist","artist":"Dirtcaps , The Kemist","isrc":"NLZ541401033","released":"2014-12-22","type":"License","expiry":"2024-12-22"},{"id":11,"title":"Fired Up Ft. The Kemist","artist":"LNY TNZ, Ruthless, The Kemist","isrc":"NLZ541500022","released":"2015-02-02","type":"Perpetuity","expiry":"Perpetuity"},{"id":12,"title":"Riot","artist":"Wiwek","isrc":"NLZ541500032","released":"2015-03-02","type":"License","expiry":"2025-03-02"},{"id":13,"title":"Into The Madness (Bassjackers Remix)","artist":"Coone, Yellow Claw, Bassjackers","isrc":"NLZ541500071","released":"2015-02-16","type":"Perpetuity","expiry":"Perpetuity"},{"id":14,"title":"Wylin","artist":"Cesqeaux","isrc":"NLZ541500097","released":"2015-03-16","type":"Perpetuity","expiry":"Perpetuity"},{"id":15,"title":"Getting Higher","artist":"Moksi","isrc":"USQY51559507","released":"2015-05-29","type":"Perpetuity","expiry":"Perpetuity"},{"id":16,"title":"Lionmane","artist":"Victor Niglio, Rawtek","isrc":"USQY51566532","released":"2015-06-29","type":"Perpetuity","expiry":"Perpetuity"},{"id":17,"title":"Smack!","artist":"Mike Cervello, Cesqeaux","isrc":"USQY51573605","released":"2015-07-10","type":"Perpetuity","expiry":"Perpetuity"},{"id":18,"title":"Flags Up","artist":"Yellow Claw, Alvaro, Dirtcaps","isrc":"USQY51578308","released":"2015-07-27","type":"License","expiry":"2025-07-27"},{"id":19,"title":"Brace Yourself (Alvaro Remix)","artist":"Moksi, Alvaro","isrc":"USQY51589828","released":"2015-08-28","type":"Perpetuity","expiry":"Perpetuity"},{"id":20,"title":"In The Rave","artist":"Moksi","isrc":"USA2P1509012","released":"2015-10-02","type":"Perpetuity","expiry":"Perpetuity"}],
+  agreements: [{"id":1,"type":"Master License","party":"Yellow Claw","start":"2014-06-02","territory":"World","duration":"10 Years","status":"Active"},{"id":2,"type":"Master License","party":"Yung Felix","start":"2014-09-08","territory":"World","duration":"10 Years","status":"Active"}],
+  splits: [{"track":"Lick Dat","party":"Yellow Claw","split":50},{"track":"Lick Dat","party":"Mightyfools","split":50}],
+  advances: [{"party":"Yellow Claw","original":50000,"outstanding":5000,"rate":90}],
+  statements: [{"period":"Mar 2023","year":2023,"month":3,"gross":39145.70,"net":33124.64},{"period":"Apr 2023","year":2023,"month":4,"gross":36998.52,"net":31265.97},{"period":"May 2023","year":2023,"month":5,"gross":42146.13,"net":35637.83},{"period":"Jun 2023","year":2023,"month":6,"gross":39361.87,"net":33282.55},{"period":"Jul 2023","year":2023,"month":7,"gross":41109.12,"net":34821.16},{"period":"Aug 2023","year":2023,"month":8,"gross":44269.97,"net":37443.04},{"period":"Sep 2023","year":2023,"month":9,"gross":42078.40,"net":35611.95},{"period":"Oct 2023","year":2023,"month":10,"gross":43265.00,"net":36641.83},{"period":"Nov 2023","year":2023,"month":11,"gross":34252.63,"net":29007.03},{"period":"Dec 2023","year":2023,"month":12,"gross":33703.25,"net":28513.71},{"period":"Jan 2024","year":2024,"month":1,"gross":42375.68,"net":35989.09},{"period":"Feb 2024","year":2024,"month":2,"gross":33473.40,"net":28287.98},{"period":"Mar 2024","year":2024,"month":3,"gross":32312.80,"net":27376.72},{"period":"Apr 2024","year":2024,"month":4,"gross":29445.71,"net":24939.57},{"period":"May 2024","year":2024,"month":5,"gross":32444.59,"net":27481.40},{"period":"Jun 2024","year":2024,"month":6,"gross":32435.86,"net":27465.74},{"period":"Jul 2024","year":2024,"month":7,"gross":32383.96,"net":27430.98},{"period":"Aug 2024","year":2024,"month":8,"gross":32402.02,"net":27424.85},{"period":"Sep 2024","year":2024,"month":9,"gross":31356.41,"net":26544.47},{"period":"Oct 2024","year":2024,"month":10,"gross":28306.91,"net":23959.99},{"period":"Nov 2024","year":2024,"month":11,"gross":29960.58,"net":25377.38},{"period":"Dec 2024","year":2024,"month":12,"gross":52526.53,"net":44553.41},{"period":"Jan 2025","year":2025,"month":1,"gross":29011.32,"net":24560.38},{"period":"Feb 2025","year":2025,"month":2,"gross":31318.49,"net":26438.56},{"period":"Mar 2025","year":2025,"month":3,"gross":52910.28,"net":44792.38},{"period":"Apr 2025","year":2025,"month":4,"gross":58909.10,"net":49932.93},{"period":"May 2025","year":2025,"month":5,"gross":52169.99,"net":44230.01},{"period":"Jun 2025","year":2025,"month":6,"gross":53311.79,"net":45191.53},{"period":"Jul 2025","year":2025,"month":7,"gross":49666.21,"net":42152.01},{"period":"Aug 2025","year":2025,"month":8,"gross":44953.34,"net":38110.53},{"period":"Sep 2025","year":2025,"month":9,"gross":56304.51,"net":47757.59},{"period":"Oct 2025","year":2025,"month":10,"gross":47718.46,"net":40455.09},{"period":"Nov 2025","year":2025,"month":11,"gross":46151.91,"net":39121.80},{"period":"Dec 2025","year":2025,"month":12,"gross":46562.05,"net":39471.78},{"period":"Jan 2026","year":2026,"month":1,"gross":45583.98,"net":38599.79},{"period":"Feb 2026","year":2026,"month":2,"gross":43587.85,"net":36973.41},{"period":"Mar 2026","year":2026,"month":3,"gross":47700.23,"net":40461.52}]
 };
-
-const tryGet = async (key, fb) => { try { const v = await storage.get(key); return v ? JSON.parse(v) : fb; } catch { return fb; } };
-const trySet = async (key, v) => { try { await storage.set(key, JSON.stringify(v)); } catch {} };
 
 function parseExcelStatement(workbook, fileName) {
   const ws = workbook.Sheets[workbook.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
   
   const monthMatch = fileName.match(/(\d{6})/);
-  if (!monthMatch) throw new Error('Cannot extract month from filename');
+  if (!monthMatch) throw new Error('Cannot extract month');
   
   const monthStr = monthMatch[1];
   const yr = parseInt(monthStr.substring(0, 4));
@@ -120,18 +107,17 @@ function Catalog({ catalog }) {
     React.createElement('div', { className: 'card', style: { padding: 0, overflow: 'hidden' } },
       React.createElement('div', { style: { overflowX: 'auto' } },
         React.createElement('table', null,
-          React.createElement('thead', null, React.createElement('tr', null, ['Title','Artist','ISRC','Released','Type','Duration','Expiry'].map(h=>React.createElement('th',{key:h},h)))),
-          React.createElement('tbody', null, filtered.slice(0,100).map((t,i)=>React.createElement('tr',{key:i},React.createElement('td',null,t.title),React.createElement('td',null,t.artist),React.createElement('td',{style:{fontFamily:'monospace',fontSize:11,color:'#94a3b8'}},t.isrc),React.createElement('td',{fontSize:12},t.released||'—'),React.createElement('td',null,React.createElement('span',{className:`badge badge-${t.type==='Perpetuity'?'perpetuity':'license'}`},t.type)),React.createElement('td',null,t.duration||'—'),React.createElement('td',null,t.expiry||'—'))))
+          React.createElement('thead', null, React.createElement('tr', null, ['Title','Artist','ISRC','Released','Type','Expiry'].map(h=>React.createElement('th',{key:h},h)))),
+          React.createElement('tbody', null, filtered.slice(0,100).map((t,i)=>React.createElement('tr',{key:i},React.createElement('td',null,t.title),React.createElement('td',null,t.artist),React.createElement('td',{style:{fontFamily:'monospace',fontSize:11,color:'#94a3b8'}},t.isrc),React.createElement('td',null,t.released||'—'),React.createElement('td',null,React.createElement('span',{className:`badge badge-${t.type==='Perpetuity'?'perpetuity':'license'}`},t.type)),React.createElement('td',null,t.expiry||'—'))))
         )
       )
-    ),
-    filtered.length > 100 && React.createElement('div',{style:{marginTop:12,fontSize:12,color:'#6b7280'}},'Showing 100 of '+filtered.length)
+    )
   );
 }
 
 function Agreements({ agreements }) {
   return React.createElement('div', { style: { padding: 24 } },
-    React.createElement('h2', { style: { fontSize: 20, fontWeight: 700, marginBottom: 16 } }, `Agreements — ${agreements.length} Contracts`),
+    React.createElement('h2', { style: { fontSize: 20, fontWeight: 700, marginBottom: 16 } }, `Agreements — ${agreements.length}`),
     React.createElement('div', { className: 'card', style: { padding: 0, overflow: 'hidden' } },
       React.createElement('div', { style: { overflowX: 'auto' } },
         React.createElement('table', null,
@@ -172,7 +158,7 @@ function Statements({ statements, setStatements }) {
     }
     
     if (newStatements.length === 0) {
-      alert('No valid statements imported');
+      alert('No valid statements');
       return;
     }
     
@@ -189,8 +175,7 @@ function Statements({ statements, setStatements }) {
     
     const combined = Object.values(existingMap).sort((a, b) => a.year !== b.year ? a.year - b.year : a.month - b.month);
     setStatements(combined);
-    await trySet('rl_statements', combined);
-    alert(`✓ Imported ${newStatements.length} month(s). Total: ${combined.length} months`);
+    alert(`✓ Imported ${newStatements.length} month(s). Total: ${combined.length}`);
   };
 
   const rows = viewYear ? statements.filter(s => s.year === viewYear).sort((a, b) => a.month - b.month) : [];
@@ -205,7 +190,7 @@ function Statements({ statements, setStatements }) {
       )
     ),
     statements.length > 0 && React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 } },
-      years.map(y => React.createElement('button', { key: y, onClick: () => setViewYear(y), style: { textAlign: 'left', padding: 14, borderRadius: 10, background: viewYear === y ? '#d4af37' : '#1a1f30', color: viewYear === y ? '#0c0f18' : '#cdd1db', border: viewYear === y ? 'none' : '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', fontWeight: viewYear === y ? 600 : 400, transition: 'all 0.2s' } }, 
+      years.map(y => React.createElement('button', { key: y, onClick: () => setViewYear(y), style: { textAlign: 'left', padding: 14, borderRadius: 10, background: viewYear === y ? '#d4af37' : '#1a1f30', color: viewYear === y ? '#0c0f18' : '#cdd1db', border: viewYear === y ? 'none' : '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', fontWeight: viewYear === y ? 600 : 400 } }, 
         React.createElement('div', { style: { fontSize: 11, color: viewYear === y ? '#0c0f18' : '#6b7280', marginBottom: 4 } }, `Year ${y}`), 
         React.createElement('div', { style: { fontSize: 16, fontWeight: 600 } }, fmt(statements.filter(s => s.year === y).reduce((s, r) => s + r.net, 0)))
       ))
@@ -230,8 +215,7 @@ function Statements({ statements, setStatements }) {
           )
         )
       )
-    ),
-    statements.length === 0 && React.createElement('div', { style: { textAlign: 'center', padding: 60, color: '#4b5563' } }, 'Click "Import Excel Files" to load monthly statements')
+    )
   );
 }
 
@@ -282,41 +266,25 @@ function Valuation({ statements }) {
     React.createElement('div', { style: { background: 'rgba(74,222,128,0.08)', border: '2px solid rgba(74,222,128,0.3)', borderRadius: 12, padding: 24, marginBottom: 24 } },
       React.createElement('div', { style: { fontSize: 12, color: '#6b7280', marginBottom: 8 } }, 'ENTERPRISE VALUE'),
       React.createElement('div', { style: { fontSize: 40, fontWeight: 700, color: '#4ade80', marginBottom: 8 } }, fmt2(ev)),
-      React.createElement('div', { style: { fontSize: 12, color: '#6b7280' } }, `At ${multiple}x EBITDA multiple on annual NET of ${fmt(avgAnnualNet)}`)
+      React.createElement('div', { style: { fontSize: 12, color: '#6b7280' } }, `At ${multiple}x EBITDA on annual NET of ${fmt(avgAnnualNet)}`)
     ),
     React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 24 } },
-      [3.5, 5, 6, 10].map(m => React.createElement('button', { key: m, onClick: () => setMultiple(m), style: { padding: 12, borderRadius: 8, background: multiple === m ? '#d4af37' : '#1a1f30', border: multiple === m ? 'none' : '1px solid rgba(255,255,255,0.1)', color: multiple === m ? '#0c0f18' : '#cdd1db', fontWeight: 600, fontSize: 14, transition: 'all 0.2s' } }, m + 'x'))
+      [3.5, 5, 6, 10].map(m => React.createElement('button', { key: m, onClick: () => setMultiple(m), style: { padding: 12, borderRadius: 8, background: multiple === m ? '#d4af37' : '#1a1f30', border: multiple === m ? 'none' : '1px solid rgba(255,255,255,0.1)', color: multiple === m ? '#0c0f18' : '#cdd1db', fontWeight: 600, fontSize: 14 } }, m + 'x'))
     ),
     React.createElement('div', { className: 'card', style: { background: 'rgba(212,175,55,0.08)', borderColor: 'rgba(212,175,55,0.3)' } },
-      React.createElement('div', { style: { fontSize: 11, color: '#6b7280', marginBottom: 12 } }, 'VALUATION METHODOLOGY'),
-      React.createElement('div', { style: { fontSize: 12, color: '#9ca3af', lineHeight: 1.8 } },
-        `Record labels valued on EBITDA/NLS multiple method. Based on ${statements.length} months of financial statements (${Math.min(...years)} – ${Math.max(...years)}). Annual NET average: ${fmt(avgAnnualNet)}. Market-standard multiple for mid-sized independent labels: 6x.`
-      )
+      React.createElement('div', { style: { fontSize: 11, color: '#6b7280', marginBottom: 12 } }, 'METHODOLOGY'),
+      React.createElement('div', { style: { fontSize: 12, color: '#9ca3af', lineHeight: 1.8 } }, `Record label valuation using EBITDA/NLS method. Based on ${statements.length} months (${Math.min(...years)}–${Math.max(...years)}). Annual NET: ${fmt(avgAnnualNet)}. Market standard multiple for independent labels: 6x.`)
     )
   );
 }
 
 function App() {
   const [tab, setTab] = useState('dashboard');
-  const [loaded, setLoaded] = useState(false);
-  const [catalog, setCatalog] = useState([]);
-  const [agreements, setAgreements] = useState([]);
-  const [statements, setStatements] = useState([]);
-  const [splits, setSplits] = useState([]);
-  const [advances, setAdvances] = useState([]);
-
-  useEffect(() => {
-    (async () => {
-      setCatalog(await tryGet('rl_catalog', []));
-      setAgreements(await tryGet('rl_agreements', []));
-      setStatements(await tryGet('rl_statements', []));
-      setSplits(await tryGet('rl_splits', []));
-      setAdvances(await tryGet('rl_advances', []));
-      setLoaded(true);
-    })();
-  }, []);
-
-  if (!loaded) return React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#0c0f18', color: '#6b7280' } }, 'Loading...');
+  const [statements, setStatements] = useState(EMBEDDED_DATA.statements || []);
+  const catalog = EMBEDDED_DATA.catalog || [];
+  const agreements = EMBEDDED_DATA.agreements || [];
+  const splits = EMBEDDED_DATA.splits || [];
+  const advances = EMBEDDED_DATA.advances || [];
 
   const tabs = [{id:'dashboard',label:'⊞ Dashboard'},{id:'agreements',label:'📄 Agreements'},{id:'catalog',label:'🎵 Catalog'},{id:'statements',label:'💶 Statements'},{id:'splits',label:'👥 Splits & Advances'},{id:'valuation',label:'📈 Valuation'}];
   const Tab = {dashboard:Dashboard,agreements:Agreements,catalog:Catalog,statements:Statements,splits:SplitsAdvances,valuation:Valuation}[tab];
@@ -331,7 +299,7 @@ function App() {
     ),
     React.createElement('div', { style: { display: 'flex', flex: 1, overflow: 'hidden' } },
       React.createElement('div', { style: { width: 170, background: '#0f1220', borderRight: '1px solid rgba(255,255,255,0.07)', padding: '8px 0', display: 'flex', flexDirection: 'column', gap: 1, overflowY: 'auto', flexShrink: 0 } },
-        tabs.map(t => React.createElement('button', { key: t.id, onClick: () => setTab(t.id), style: { width: '100%', padding: '11px 14px', background: tab === t.id ? 'rgba(212,175,55,0.1)' : 'transparent', color: tab === t.id ? '#d4af37' : '#8b95a8', border: 'none', cursor: 'pointer', fontSize: 13, textAlign: 'left', borderLeft: `3px solid ${tab === t.id ? '#d4af37' : 'transparent'}`, transition: 'all 0.2s' } }, t.label))
+        tabs.map(t => React.createElement('button', { key: t.id, onClick: () => setTab(t.id), style: { width: '100%', padding: '11px 14px', background: tab === t.id ? 'rgba(212,175,55,0.1)' : 'transparent', color: tab === t.id ? '#d4af37' : '#8b95a8', border: 'none', cursor: 'pointer', fontSize: 13, textAlign: 'left', borderLeft: `3px solid ${tab === t.id ? '#d4af37' : 'transparent'}` } }, t.label))
       ),
       React.createElement('div', { style: { flex: 1, overflowY: 'auto', background: '#0c0f18' } },
         React.createElement(Tab, { catalog, agreements, statements, setStatements, splits, advances })
