@@ -65,7 +65,7 @@ function Catalog({ catalog }) {
       React.createElement('div', { style: { overflowX: 'auto' } },
         React.createElement('table', null,
           React.createElement('thead', null, React.createElement('tr', null, ['Title','Artist','ISRC','Type'].map(h=>React.createElement('th',{key:h},h)))),
-          React.createElement('tbody', null, filtered.slice(0,100).map((t,i)=>React.createElement('tr',{key:i},React.createElement('td',null,t.title||''),React.createElement('td',null,t.artist||''),React.createElement('td',{style:{fontFamily:'monospace',fontSize:11}},t.isrc||''),React.createElement('td',null,React.createElement('span',{className:`badge badge-${t.type==='Perpetuity'?'perpetuity':'license'}`},t.type||'License')))))
+          React.createElement('tbody', null, filtered.map((t,i)=>React.createElement('tr',{key:i},React.createElement('td',null,t.title||''),React.createElement('td',null,t.artist||''),React.createElement('td',{style:{fontFamily:'monospace',fontSize:11}},t.isrc||''),React.createElement('td',null,React.createElement('span',{className:`badge badge-${t.type==='Perpetuity'?'perpetuity':'license'}`},t.type||'License')))))
         )
       )
     )
@@ -79,7 +79,7 @@ function Agreements({ agreements }) {
       React.createElement('div', { style: { overflowX: 'auto' } },
         React.createElement('table', null,
           React.createElement('thead', null, React.createElement('tr', null, ['Type','Party','Territory','Status'].map(h=>React.createElement('th',{key:h},h)))),
-          React.createElement('tbody', null, agreements.slice(0,100).map((a,i)=>React.createElement('tr',{key:i},React.createElement('td',null,React.createElement('span',{className:'badge badge-license'},a.type||'')),React.createElement('td',null,a.party||''),React.createElement('td',null,a.territory||''),React.createElement('td',null,a.status||''))))
+          React.createElement('tbody', null, agreements.map((a,i)=>React.createElement('tr',{key:i},React.createElement('td',null,React.createElement('span',{className:'badge badge-license'},a.type||'')),React.createElement('td',null,a.party||''),React.createElement('td',null,a.territory||''),React.createElement('td',null,a.status||''))))
         )
       )
     )
