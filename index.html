@@ -62,8 +62,8 @@ function CatalogTab() {
     React.createElement('div', {className:'card',style:{padding:0,overflow:'hidden'}},
       React.createElement('div', {style:{overflowX:'auto'}},
         React.createElement('table', null,
-          React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Title'), React.createElement('th', null, 'Artist'), React.createElement('th', null, 'ISRC'), React.createElement('th', null, 'Type'))),
-          React.createElement('tbody', null, filtered.map((t,i)=>React.createElement('tr', {key:i}, React.createElement('td', null, t.title||''), React.createElement('td', null, t.artist||''), React.createElement('td', {style:{fontFamily:'monospace',fontSize:11}}, t.isrc||''), React.createElement('td', null, React.createElement('span', {className:'badge badge-'+(t.type==='Perpetuity'?'perpetuity':'license')}, t.type)))))
+          React.createElement('thead', null, React.createElement('tr', null, React.createElement('th', null, 'Title'), React.createElement('th', null, 'Artist'), React.createElement('th', null, 'ISRC'), React.createElement('th', null, 'Duration'), React.createElement('th', null, 'Type'))),
+          React.createElement('tbody', null, filtered.map((t,i)=>React.createElement('tr', {key:i}, React.createElement('td', null, t.title||''), React.createElement('td', null, t.artist||''), React.createElement('td', {style:{fontFamily:'monospace',fontSize:11}}, t.isrc||''), React.createElement('td', null, t.duration||''), React.createElement('td', null, React.createElement('span', {className:'badge badge-'+(t.type==='Perpetuity'?'perpetuity':'license')}, t.type)))))
         )
       )
     )
