@@ -65,6 +65,22 @@ function Catalog({ catalog }) {
       React.createElement('div', { style: { overflowX: 'auto' } },
         React.createElement('table', null,
           React.createElement('thead', null, React.createElement('tr', null, ['Title','Artist','ISRC','Duration','Type'].map(h=>React.createElement('th',{key:h},h)))),
+          React.createElement('tbody', null, filtered.map((t,i)=>React.createElement('tr',{key:i},React.createElement('td',null,t.title||''),React.createElement('td',null,t.artist||''),React.createElement('td',{style:{fontFamily:'monospace',fontSize:11}},t.isrc||''),React.createElement('td',null,t.duration||''),React.createElement('td',null,React.createElement('span',{className:`badge badge-${t.type==='Perpetuity'?'perpetuity':'license'}`},t.type||'License')))))
+        )
+      )
+    )
+  );
+}) {
+  const [search, setSearch] = useState('');
+  const filtered = search ? catalog.filter(t => (t.title || '').toLowerCase().includes(search.toLowerCase())) : catalog;
+  
+  return React.createElement('div', { style: { padding: 24 } },
+    React.createElement('h2', { style: { fontSize: 20, fontWeight: 700, marginBottom: 16 } }, `Catalog — ${catalog.length} Tracks`),
+    React.createElement('input', { placeholder: 'Search by title...', value: search, onChange: e => setSearch(e.target.value), style: { marginBottom: 16, maxWidth: 400 } }),
+    React.createElement('div', { className: 'card', style: { padding: 0, overflow: 'hidden' } },
+      React.createElement('div', { style: { overflowX: 'auto' } },
+        React.createElement('table', null,
+          React.createElement('thead', null, React.createElement('tr', null, ['Title','Artist','ISRC','Duration','Type'].map(h=>React.createElement('th',{key:h},h)))),
           React.createElement('tbody', null, filtered.map((t,i)=>React.createElement('tr',{key:i},React.createElement('td',null,t.title||''),React.createElement('td',null,t.artist||''),React.createElement('td',{style:{fontFamily:'monospace',fontSize:11}},t.isrc||''),React.createElement('td',null,React.createElement('span',{className:`badge badge-${t.type==='Perpetuity'?'perpetuity':'license'}`},t.type||'License')))))
         )
       )
